@@ -69,33 +69,7 @@
                 <th>Email</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>Claudette</td>
-                <td>Ancketill</td>
-                <td>cancketill0@msn.com</td>
-              </tr>
-              <tr>
-                <td>Kelcy</td>
-                <td>Van Der Hoog</td>
-                <td>kvanderhoog1@utexas.edu</td>
-              </tr>
-              <tr>
-                <td>Sibilla</td>
-                <td>Willets</td>
-                <td>swillets2@unesco.org</td>
-              </tr>
-              <tr>
-                <td>Boy</td>
-                <td>Schirok</td>
-                <td>bschirok3@twitter.com</td>
-              </tr>
-              <tr>
-                <td>Philis</td>
-                <td>Barlow</td>
-                <td>pbarlow4@myspace.com</td>
-              </tr>
-            </tbody>
+            <tbody id="studentTableBody"></tbody>
           </table>
 
           <!-- My personal code ends here -->
@@ -118,5 +92,27 @@
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
       crossorigin="anonymous"
     ></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("students")
+          .then((response) => response.json())
+          .then((data) => {
+            const studentTableBody =
+              document.getElementById("studentTableBody");
+            data.slice(0, 5).forEach((student) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td>${student.firstName}</td>
+                <td>${student.lastName}</td>
+                <td>${student.email}</td>
+              `;
+              studentTableBody.appendChild(row);
+            });
+          })
+          .catch((error) => {
+            console.error("Failed to fetch students data:", error);
+          });
+      });
+    </script>
   </body>
 </html>
