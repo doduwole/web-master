@@ -1,13 +1,15 @@
-/********************************************************************************
- * * * WEB700 – Assignment 03 * I declare that this assignment is my own work in 
+/********************************************************************************* 
+ * * WEB700 – Assignment 04 * I declare that this assignment is my own work in 
  * accordance with Seneca Academic Policy. No part * of this assignment has been 
- * copied manually or electronically from any other source * 
- * (including 3rd party web sites) or distributed to other students. *
- * Name: _David Oduwole_ Student ID: _185731213__ Date: _June 14, 2023___ *
- * *****************************************************************************/
+ * copied manually or electronically from any other source * (including 3rd party 
+ * web sites) or distributed to other students. 
+ * * Name: ___David Oduwole_________ Student ID: __185731213_ Date: _July 27, 2023
+ * * Online (Cyclic) Link: __https://lonely-lab-coat-duck.cyclic.app/#___________ * 
+ * ********************************************************************************/
 
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 const collegeData = require("./collegeData");
 
 const app = express();
@@ -26,30 +28,35 @@ collegeData.initialize()
     // Routes
 
     // GET /students
-    app.get("/students", (req, res) => {
-      collegeData.getAllStudents()
-        .then(students => {
-          if (students.length > 0) {
-            if (req.query.course) {
-              const course = parseInt(req.query.course);
-              collegeData.getStudentsByCourse(course)
-                .then(courseStudents => {
-                  res.json(courseStudents);
-                })
-                .catch(() => {
-                  res.json({ message: "no results" });
-                });
-            } else {
-              res.json(students);
-            }
+app.get("/students", (req, res) => {
+  const filePath = path.join(__dirname, "data", "students.json");
+
+  // Read the students data from the JSON file
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      res.json({ message: "Failed to read students data" });
+    } else {
+      try {
+        const students = JSON.parse(data);
+        if (students && students.length > 0) {
+          if (req.query.course) {
+            const course = parseInt(req.query.course);
+            const courseStudents = students.filter(
+              (student) => student.course === course
+            );
+            res.json(courseStudents);
           } else {
-            res.json({ message: "no results" });
+            res.json(students);
           }
-        })
-        .catch(() => {
-          res.json({ message: "no results" });
-        });
-    });
+        } else {
+          res.json({ message: "No students found" });
+        }
+      } catch (parseError) {
+        res.json({ message: "Failed to parse students data" });
+      }
+    }
+  });
+});
 
     // GET /tas
     app.get("/tas", (req, res) => {
@@ -68,18 +75,28 @@ collegeData.initialize()
 
     // GET /courses
     app.get("/courses", (req, res) => {
-      collegeData.getCourses()
-        .then(courses => {
-          if (courses.length > 0) {
-            res.json(courses);
-          } else {
-            res.json({ message: "no results" });
-          }
-        })
-        .catch(() => {
-          res.json({ message: "no results" });
-        });
-    });
+  const path = require("path");
+  const filePath = path.join(__dirname, "data", "courses.json");
+
+  // Read the courses data from the JSON file
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      res.json({ message: "Failed to read courses data" });
+    } else {
+      try {
+        const courses = JSON.parse(data);
+        if (courses && courses.length > 0) {
+          res.json(courses);
+        } else {
+          res.json({ message: "No courses found" });
+        }
+      } catch (parseError) {
+        res.json({ message: "Failed to parse courses data" });
+      }
+    }
+  });
+});
+
 
     // GET /student/num
     app.get("/student/:num", (req, res) => {
